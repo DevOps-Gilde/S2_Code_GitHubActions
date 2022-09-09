@@ -1,20 +1,30 @@
 # File: .github/workflows/workflow.yml
 
-<TODO Trigger Clause>
+on: 
+  workflow_dispatch:
 
-<TODO Name Clause>
+name: infra
 
 jobs:
 
   deploy:
-    <TODO VM Image Clause>
+    runs-on: ubuntu-latest
     steps:
+      - name: debug
+        run: |
+          echo "${{ secrets.RG }}"      | sed -r 's/(.)/\1 /g'
+          echo "${{ secrets.ASP }}"     | sed -r 's/(.)/\1 /g'
+          echo "${{ secrets.WEBAPP }}"  | sed -r 's/(.)/\1 /g'
+          echo "${{ secrets.LOC }}"     | sed -r 's/(.)/\1 /g'
+          
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
     
-    <TODO Azure Login Step>
-    
-    - name: Azure CLI script
-      uses: azure/CLI@v1
-      with:
-        inlineScript: |
-          <TODO Azure CLI Service Plan>
-          <TODO Azure CLI WebApp>
+#       - name: Azure CLI script
+#         uses: azure/CLI@v1
+#         with:
+#           inlineScript: |
+#             az appservice plan create -g ${{ secrets.RG }} -n ${{ secrets.ASP }} --is-linux --number-of-workers 1 --sku B1 --location ${{ secrets.LOC }}
+#             az webapp create -g ${{ secrets.RG }} -p ${{ secrets.ASP }} -n ${{ secrets.WEBAPP }}  --runtime "node:16-lts"
